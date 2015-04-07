@@ -1,0 +1,90 @@
+<?php
+/**
+ * @file
+ * Edit XML using a lightweight javascript editor.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function jquery_xmleditor_menu() {
+  return array(
+    'admin/config/content/jquery_xmleditor' => array(
+      'title' => 'jquery.xmleditor',
+      'description' => 'Configure the jquery.xmleditor',
+      'page callback' => 'drupal_get_form',
+      'access arguments' => array('administer site configuration'),
+      'page arguments' => array('jquery_xmleditor_admin'),
+      'type' => MENU_NORMAL_ITEM,
+      'file' => 'includes/admin_form.inc',
+    ),
+  );
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function jquery_xmleditor_libraries_info() {
+  return array(
+    'jquery.xmleditor' => array(
+      'name' => 'jquery.xmleditor',
+      'vendor url' => 'https://github.com/UNC-Libraries/jquery.xmleditor',
+      'download url' => 'https://github.com/UNC-Libraries/jquery.xmleditor',
+      'version' => '1.x',
+      'files' => array(
+        'js' => array(
+          'jquery.xmleditor.js',
+          'lib/json2.js',
+          'lib/vkbeautify.js',
+        ),
+        'css' => array(
+          'css/jquery.xmleditor.css',
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function jquery_xmleditor_field_widget_info() {
+  return array(
+    'jquery_xmleditor' => array(
+      'label' => t('jquery.xmleditor'),
+      'description' => t('Use the jquery.xmleditor to edit the XML'),
+      'field types' => array('xml_field_xml'),
+      'settings' => array('schema' => NULL),
+      'behaviours' => array(
+        'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+        'default values' => FIELD_BEHAVIOR_DEFAULT,
+      ),
+      'weight' => 3,
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function jquery_xmleditor_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $default_value = isset($items[$delta]['jquery_xmleditor']) ? $items[$delta]['jquery_xmleditor'] : '';
+
+  $widget = $element;
+  $widget['#delta'] = $delta;
+
+  if ($instance['widget']['type'] == 'jquery_xmleditor') {
+    $widget += array(
+      '#suffix' => '<div class="field-jquery-xmleditor"></div>',
+      '#attributes' => array('class' => array('edit-field-jquery-xmleditor')),
+      '#attached' => array(
+        'libraries_load' => array(
+          array('jquery.xmleditor'),
+        ),
+        // 'js' => array(drupal_get_path('module', 'jquery_xmleditor') . '/field_xmleditor.js'),
+      ),
+    );
+    $element['jquery_xmleditor'] = $widget;
+  }
+  return $element;
+}

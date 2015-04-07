@@ -1,0 +1,7 @@
+name = JQuery XMLEditor
+description = "Create/Edit XML data with a javascript editor"
+package = Islandora
+version = 7.x-2.x-dev
+core = 7.x
+dependencies[] = libraries
+dependencies[] = jquery_update
