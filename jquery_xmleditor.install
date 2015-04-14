@@ -4,6 +4,9 @@
  * Un/Install functions.
  */
 
+/**
+ * Implements hook_schema().
+ */
 function jquery_xmleditor_schema() {
   $schema['jquery_xmleditor_schemas'] = array(
     'description' => 'Listing of XML Schemas converted to JSON for use with the editor.',
@@ -18,7 +21,7 @@ function jquery_xmleditor_schema() {
         'description' => 'Brief name of schema and primary key',
         'type' => 'varchar',
         'length' => 50,
-        'not null' => TRUE
+        'not null' => TRUE,
       ),
       'description' => array(
         'description' => 'Longer description of the schema.',
@@ -49,6 +52,9 @@ function jquery_xmleditor_schema() {
   return $schema;
 }
 
+/**
+ * Implements hook_install().
+ */
 function jquery_xmleditor_install() {
   db_insert('jquery_xmleditor_schemas')->fields(array(
     'name' => 'MODS-3.4 (pre-installed)',

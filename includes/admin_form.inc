@@ -61,9 +61,14 @@ function jquery_xmleditor_admin($form, &$form_state) {
     ),
   );
 
-  $headers = array('Schema name', 'Schema description', 'XML Schema file', 'JSON Schema');
+  $headers = array(
+    'Schema name',
+    'Schema description',
+    'XML Schema file',
+    'JSON Schema',
+  );
   $schemas = db_query("SELECT id, name, description, xml_schema, json_schema from {jquery_xmleditor_schemas} ORDER BY name ASC");
-  
+
   $rows = array();
   foreach ($schemas as $record) {
     $rows[$record->id] = array(
@@ -73,7 +78,7 @@ function jquery_xmleditor_admin($form, &$form_state) {
       $record->json_schema,
     );
   }
-  
+
   $form['jquery_xmleditor_schemas'] = array(
     '#type' => 'tableselect',
     '#header' => $headers,

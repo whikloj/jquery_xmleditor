@@ -40,19 +40,16 @@ function jquery_xmleditor_field_widget_form(&$form, &$form_state, $field, $insta
     $base = base_path();
 
     if (FALSE !== $schema) {
-      $js =<<<EOF
+      $js = <<<EOF
 jQuery(document).ready(function() {
+      var converter = new Xsd2Json("{$schema->xsd_filename}", { "schemaURI" : "{$base}/{$schema->directory}"});
       jQuery(".edit-field-jquery-xmleditor.{$id}").xmlEditor({
-              'schema' : "{$base}/jquery_xmleditor/schemas/{$schema->id}",
-              'absoluteSchemaUrl' : true,
-              'loadSchemaAsychronously' : false,
+              'schema' : converter.getSchema(),
       });
 });
 EOF;
       $new_widget = array(
         '#type' => 'textarea',
-//        '#prefix' => '<div id="' . $id . '" class="field-jquery-xmleditor">',
-//        '#suffix' => '</div>',
         '#default_value' => '<mods:mods xmlns:mods="http://www.loc.gov/mods/v3"> </mods:mods>',
         '#attributes' => array('class' => array('edit-field-jquery-xmleditor ' . $id)),
         '#attached' => array(
@@ -99,16 +96,16 @@ function jquery_xmleditor_field_widget_settings_form($field, $instance) {
     $default_value = $settings['schema'];
   }
   $form['schema'] = array(
-      '#type' => 'select',
-      '#title' => 'Schema for the XML in this field.',
-      '#default_value' => $default_value,
-      '#options' => jquery_xmleditor_select_schemas(),
+    '#type' => 'select',
+    '#title' => 'Schema for the XML in this field.',
+    '#default_value' => $default_value,
+    '#options' => jquery_xmleditor_select_schemas(),
   );
   return $form;
 }
 
 /**
- * Builds select box options of available schemas
+ * Builds select box options of available schemas.
  */
 function jquery_xmleditor_select_schemas() {
   $results = db_query("SELECT id, name FROM {jquery_xmleditor_schemas} ORDER BY name");
