@@ -45,14 +45,40 @@ function jquery_xmleditor_admin($form, &$form_state) {
 
   $form['jquery_xmleditor_library_check'] = array(
     '#title' => t('jquery.xmleditor Library'),
-    '#type' => 'item',
-    '#markup' => $confirmation,
+    '#type' => 'fieldset',
+    'library_check' => array(
+      '#type' => 'item',
+      '#markup' => $confirmation,
+    ),
   );
 
   $form['jquery_xmleditor_jq_version'] = array(
     '#title' => t('JQuery Version'),
-    '#type' => 'item',
-    '#markup' => $jq_version,
+    '#type' => 'fieldset',
+    'jquery_check' => array(
+      '#type' => 'item',
+      '#markup' => $jq_version,
+    ),
+  );
+
+  $headers = array('Schema name', 'Schema description', 'XML Schema file', 'JSON Schema');
+  $schemas = db_query("SELECT id, name, description, xml_schema, json_schema from {jquery_xmleditor_schemas} ORDER BY name ASC");
+  
+  $rows = array();
+  foreach ($schemas as $record) {
+    $rows[$record->id] = array(
+      $record->name,
+      $record->description,
+      $record->xml_schema,
+      $record->json_schema,
+    );
+  }
+  
+  $form['jquery_xmleditor_schemas'] = array(
+    '#type' => 'tableselect',
+    '#header' => $headers,
+    '#options' => $rows,
+    '#empty' => t('No schemas available'),
   );
 
   return $form;

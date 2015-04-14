@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file
+ * Un/Install functions.
+ */
+
+function jquery_xmleditor_schema() {
+  $schema['jquery_xmleditor_schemas'] = array(
+    'description' => 'Listing of XML Schemas converted to JSON for use with the editor.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Unique id of a schema',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'Brief name of schema and primary key',
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE
+      ),
+      'description' => array(
+        'description' => 'Longer description of the schema.',
+        'type' => 'varchar',
+        'length' => 255,
+      ),
+      'xml_schema' => array(
+        'description' => 'Local copy of the Schema, grabbed from remote_url or uploaded as a file.',
+        'type' => 'varchar',
+        'length' => 200,
+      ),
+      'json_schema' => array(
+        'description' => 'Local copy of the JSON produced by Xsd2Json for this schema.',
+        'type' => 'varchar',
+        'length' => 200,
+      ),
+      'root_element' => array(
+        'description' => 'The root element of this schema, used when generating a file from the editor.',
+        'type' => 'varchar',
+        'length' => 50,
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+  );
+  return $schema;
+}
+
+function jquery_xmleditor_install() {
+  db_insert('jquery_xmleditor_schemas')->fields(array(
+    'name' => 'MODS-3.4 (pre-installed)',
+    'description' => 'Metadata Object Description Schema (LoC)',
+    'xml_schema' => drupal_get_path('module', 'jquery_xmleditor') . '/schemas/mods/mods-3.4.xsd',
+    'json_schema' => drupal_get_path('module', 'jquery_xmleditor') . '/schemas/mods/mods-3.4.json',
+    'root_element' => 'mods',
+  ))->execute();
+}

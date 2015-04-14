@@ -5,6 +5,11 @@
  */
 
 /**
+ * Functions for defining this as a widget
+ */
+require_once drupal_get_path('module', 'jquery_xmleditor') . '/includes/widget.inc';
+
+/**
  * Implements hook_menu().
  */
 function jquery_xmleditor_menu() {
@@ -17,6 +22,13 @@ function jquery_xmleditor_menu() {
       'page arguments' => array('jquery_xmleditor_admin'),
       'type' => MENU_NORMAL_ITEM,
       'file' => 'includes/admin_form.inc',
+    ),
+    'jquery_xmleditor/schemas/%' => array(
+      'title' => 'Ajax pass through for Schema',
+      'page callback' => 'jquery_xmleditor_get_json',
+      'page arguments' => array(2),
+      'type' => MENU_CALLBACK,
+      'access callback' => TRUE,
     ),
   );
 }
@@ -33,58 +45,31 @@ function jquery_xmleditor_libraries_info() {
       'version' => '1.x',
       'files' => array(
         'js' => array(
-          'jquery.xmleditor.js',
+          'lib/ace/src-min/ace.js',
           'lib/json2.js',
+          'lib/cycle.js',
+          'lib/jquery.autosize-min.js',
           'lib/vkbeautify.js',
+          'xsd/xsd2json.js',
+          'jquery.xmleditor.js',
         ),
         'css' => array(
           'css/jquery.xmleditor.css',
         ),
       ),
+
     ),
   );
 }
 
 /**
- * Implements hook_field_widget_info().
+ * Simple redirect for jquery.xmleditor Ajax request to get schema documents.
  */
-function jquery_xmleditor_field_widget_info() {
-  return array(
-    'jquery_xmleditor' => array(
-      'label' => t('jquery.xmleditor'),
-      'description' => t('Use the jquery.xmleditor to edit the XML'),
-      'field types' => array('xml_field_xml'),
-      'settings' => array('schema' => NULL),
-      'behaviours' => array(
-        'multiple values' => FIELD_BEHAVIOR_DEFAULT,
-        'default values' => FIELD_BEHAVIOR_DEFAULT,
-      ),
-      'weight' => 3,
-    ),
-  );
-}
-
-/**
- * Implements hook_field_widget_form().
- */
-function jquery_xmleditor_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  $default_value = isset($items[$delta]['jquery_xmleditor']) ? $items[$delta]['jquery_xmleditor'] : '';
-
-  $widget = $element;
-  $widget['#delta'] = $delta;
-
-  if ($instance['widget']['type'] == 'jquery_xmleditor') {
-    $widget += array(
-      '#suffix' => '<div class="field-jquery-xmleditor"></div>',
-      '#attributes' => array('class' => array('edit-field-jquery-xmleditor')),
-      '#attached' => array(
-        'libraries_load' => array(
-          array('jquery.xmleditor'),
-        ),
-        // 'js' => array(drupal_get_path('module', 'jquery_xmleditor') . '/field_xmleditor.js'),
-      ),
-    );
-    $element['jquery_xmleditor'] = $widget;
+function jquery_xmleditor_get_json($file_id) {
+  $results = db_query("SELECT json_schema FROM {jquery_xmleditor_schemas} WHERE id = :id", array(':id' => $file_id));
+  if ($results->rowCount() > 0) {
+    $result = $results->fetchObject();
+    $json_file = $result->json_schema;
+    drupal_goto($result->json_schema);
   }
-  return $element;
 }
